@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { router } from "../routes/usuarios.js";
+import { dbConnection } from '../database/config.js';
 
 dotenv.config();
 
@@ -12,11 +13,18 @@ class Server {
         this.port = process.env.PORT;
         this.usuariosPath = '/api/usuarios';
 
+        //conectar DB
+        this.ConectarDB();
+
         //middlewares
         this.middlewares()
 
         //rutas de la aplicacion
         this.routes();
+    }
+
+    async ConectarDB(){
+        await dbConnection();
     }
 
     middlewares() {
@@ -37,7 +45,7 @@ class Server {
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Example app listening on port ${this.port}`)
+            console.log(`App listening on port ${this.port}`)
         });
     }
 
