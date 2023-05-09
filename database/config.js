@@ -7,7 +7,7 @@ const dbConnection = async()=>{
             sslValidate: false
         });
 
-        console.log('Connecting successfully');
+        console.log('Connecting successfully to DB online');
 
     } catch (error) {
         console.log(error);

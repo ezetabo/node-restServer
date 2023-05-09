@@ -1,8 +1,8 @@
 import { Router } from "express";
-import * as ctr from "../controllers/usuarios.js";
-import { validarCampos } from "../middlewares/validar-campos.js";
 import { check } from "express-validator";
+import * as mdw from "../middlewares/index.js";
 import { esRolValido, existeID, existeMail } from "../helpers/db-validators.js";
+import * as ctr from "../controllers/usuarios.js";
 
 
 const router = Router();
@@ -10,11 +10,11 @@ const router = Router();
 
 router.get('/', ctr.usuariosGet);
 
-router.put('/:id',[
-    check('id','No es un ID valido').isMongoId(),
+router.put('/:id', [
+    check('id', 'No es un ID valido').isMongoId(),
     check('id').custom(existeID),
     check('rol').custom(esRolValido),
-    validarCampos
+    mdw.validarCampos
 ], ctr.usuariosPut);
 
 router.post('/', [
@@ -23,21 +23,20 @@ router.post('/', [
     check('correo', 'El correo no es valido').isEmail(),
     check('correo').custom(existeMail),
     check('rol').custom((rol) => esRolValido(rol)),
-    validarCampos
+    mdw.validarCampos
 ], ctr.usuariosPost);
 
 router.patch('/', ctr.usuariosPatch);
 
-router.delete('/:id',[
-    //644fdc30ea8d180267694de0
-    check('id','No es un ID valido').isMongoId(),
+router.delete('/:id', [
+    mdw.validarJWT,
+    mdw.validarRoles.esAdmin,
+    mdw.validarRoles.tieneRol('ADMIN_ROLE', 'USER_ROLE'),
+    check('id', 'No es un ID valido').isMongoId(),
     check('id').custom(existeID),
-    validarCampos
+    mdw.validarCampos
 ], ctr.usuariosDelete);
 
-export {
-    router
-}
 
 check('rol').custom(async (rol = '') => {
     const existeRol = await Role.findOne({ rol });
@@ -45,3 +44,7 @@ check('rol').custom(async (rol = '') => {
         throw new Error(`El rol ${rol} no es valido`);
     }
 })
+
+export {
+    router
+}

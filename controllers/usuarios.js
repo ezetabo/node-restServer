@@ -67,10 +67,10 @@ const usuariosDelete = async (req = request, res = response) => {
     //const usuario = await Usuario.findByIdAndDelete(id);
 
     //baja logica
-    const usuario = await Usuario.findByIdAndUpdate(id,{estado:false});
+    const usuario = await Usuario.findByIdAndUpdate(id,{estado:false});    
 
     res.status(200).json({       
-        usuario
+        usuario: usuario
     });
 }
 
